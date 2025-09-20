@@ -2,26 +2,23 @@ import express from "express";
 import bodyParser from "body-parser";
 import fs from "fs";
 
-const app = express();
+const exp = express();
 const PORT = 5000;
 const DATA_FILE = "data.json";
 
-app.use(bodyParser.json());
+exp.use(bodyParser.json());
 
-// Helper: Read data.json
 function readData() {
   if (!fs.existsSync(DATA_FILE)) return [];
   const data = fs.readFileSync(DATA_FILE);
   return JSON.parse(data || "[]");
 }
 
-// Helper: Write to data.json
 function writeData(posts) {
   fs.writeFileSync(DATA_FILE, JSON.stringify(posts, null, 2));
 }
 
-// Create → POST /posts
-app.post("/posts", (req, res) => {
+exp.post("/posts", (req, res) => {
   const { title, content } = req.body;
   if (!title || !content) {
     return res.status(400).json({ message: "Title and content are required" });
@@ -40,14 +37,12 @@ app.post("/posts", (req, res) => {
   res.status(201).json(newPost);
 });
 
-// Read → GET /posts
-app.get("/posts", (req, res) => {
+exp.get("/posts", (req, res) => {
   const posts = readData();
   res.json(posts);
 });
 
-// Update → PUT /posts/:id
-app.put("/posts/:id", (req, res) => {
+exp.put("/posts/:id", (req, res) => {
   const { id } = req.params;
   const { title, content } = req.body;
 
@@ -66,8 +61,7 @@ app.put("/posts/:id", (req, res) => {
   res.json(posts[postIndex]);
 });
 
-// Delete → DELETE /posts/:id
-app.delete("/posts/:id", (req, res) => {
+exp.delete("/posts/:id", (req, res) => {
   const { id } = req.params;
 
   let posts = readData();
@@ -83,7 +77,6 @@ app.delete("/posts/:id", (req, res) => {
   res.json(deletedPost[0]);
 });
 
-// Start server
-app.listen(PORT, () => {
+exp.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
