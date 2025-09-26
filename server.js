@@ -19,16 +19,18 @@ function writeData(posts) {
 }
 
 exp.post("/posts", (req, res) => {
-  const { title, content } = req.body;
-  if (!title || !content) {
-    return res.status(400).json({ message: "Title and content are required" });
+  const { title, content, description } = req.body; 
+  if (!title || !content || !description) {
+  return res.status(400).json({ message: "Title, content, and description are required" });
   }
 
   const posts = readData();
+  console.log("REQ BODY:", req.body);
   const newPost = {
-    id: posts.length ? posts[posts.length - 1].id + 1 : 1,
+    id: Date.now(), 
     title,
     content,
+    description: description || ""
   };
 
   posts.push(newPost);
@@ -44,7 +46,7 @@ exp.get("/posts", (req, res) => {
 
 exp.put("/posts/:id", (req, res) => {
   const { id } = req.params;
-  const { title, content } = req.body;
+  const { title, content, description } = req.body;
 
   const posts = readData();
   const postIndex = posts.findIndex((p) => p.id === parseInt(id));
@@ -55,6 +57,7 @@ exp.put("/posts/:id", (req, res) => {
 
   posts[postIndex].title = title || posts[postIndex].title;
   posts[postIndex].content = content || posts[postIndex].content;
+  posts[postIndex].description = description || posts[postIndex].description;
 
   writeData(posts);
 
